@@ -12,7 +12,7 @@ import {
   Email,
   Date,
   Enum,
-  Array, 
+  Array,
   Nested,
   transform,
   transformAndValidate
@@ -300,7 +300,7 @@ describe("Nested", () => {
         prop: {
           type: "array",
           strict: true,
-          items: {
+          items: { 
             props: {
               anotherNested: {
                 props: {
@@ -405,14 +405,14 @@ describe("transform", () =>{
     get total (): number{return 1;}
 
   }
-    
+
   @Schema(true)
   class NestedTest {
     @Nested()
     anotherNested: AnotherNested;
     get total (): number{return 1;}
   }
-    
+
   @Schema()
   class Test {
     @Nested(NestedTest)

@@ -16,7 +16,8 @@ export const validate = (obj: any): true | ValidationError[] => {
   if (!obj._validate) {
     throw new Error("Obj is missing complied validation method");
   }
-  return obj._validate(obj.data);
+  const { _validate, _schema, ...data } = obj;
+  return _validate(data);
 };
 
 export const validateOrReject = async (obj: any): Promise<true | ValidationError[]> => {
@@ -54,7 +55,7 @@ export function Schema (strict = false, messages = {}): any {
 }
 
 export const decoratorFactory = <T>(mandatory = {}, defaults = {}) => {
-  return function (options?: T): any {
+  return function (options?: T | T[]): any {
     return (target: any, key: string | symbol): any => {
       updateSchema(target, key, { ...defaults, ...(options || {}), ...mandatory });
     };

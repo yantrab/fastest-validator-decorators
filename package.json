@@ -1,12 +1,12 @@
 {
-  "name": "fastest-validator-decorators",
-  "author": "Toby de Havilland",
-  "version": "1.0.5",
+  "name": "fastest-validator-typesciprt",
+  "author": "yaniv trabelsi",
+  "version": "0.0.1",
   "description": "Fastest validator decorators",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tobydeh/fastest-validator-decorators.git"
+    "url": "git+https://github.com/yantrab/fastest-validator-decorators.git"
   },
   "scripts": {
     "clean": "rm -rf dist/",
