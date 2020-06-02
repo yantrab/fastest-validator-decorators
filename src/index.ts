@@ -73,7 +73,7 @@ export const Date = decoratorFactory<DateOptions>({ type: "date" });
 export const Enum = decoratorFactory<Options>({ type: "enum" });
 export const Array = decoratorFactory<ArrayOptions>({ type: "array" });
 
-export function Nested (options?: Options): any {
+export function Nested (): any {
   return (target: any, key: string): any => {
     const t = Reflect.getMetadata("design:type", target, key);
     Reflect.defineMetadata(TYPE_KEY, t, target, key);
@@ -85,16 +85,11 @@ export function Nested (options?: Options): any {
 }
 export function NestedArray (type, options?: Options): any {
   return (target: any, key: string): any => {
-    const t = Reflect.getMetadata("design:type", target, key);
-    if (t.name === "Array") {
-      const props = Object.assign({}, getSchema(type));
-      const strict = props.$$strict || false;
-      delete props.$$strict;
-      Reflect.defineMetadata(TYPE_KEY, type, target, key);
-
-      updateSchema(target, key, {type: "array", strict, items: {...options, props, strict, type: "object"}});
-      return;
-    }
+    const props = Object.assign({}, getSchema(type));
+    const strict = props.$$strict || false;
+    delete props.$$strict;
+    Reflect.defineMetadata(TYPE_KEY, type, target, key);
+    updateSchema(target, key, {type: "array", strict, items: {...options, props, strict, type: "object"}});
   };
 }
 
