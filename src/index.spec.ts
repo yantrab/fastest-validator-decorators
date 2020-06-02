@@ -12,8 +12,10 @@ import {
   Email,
   Date,
   Enum,
-  Array,
-  Nested
+  Array, 
+  Nested,
+  transform,
+  transformAndValidate
 } from "../src/index";
 
 describe("Schema", () => {
@@ -68,7 +70,7 @@ describe("String", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @String({ type: "x", empty: true })
+      @String({ empty: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "string", empty: true } });
@@ -89,7 +91,7 @@ describe("Boolean", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Boolean({ type: "x", optional: true })
+      @Boolean({ optional: true })
       prop: boolean;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "boolean", optional: true } });
@@ -110,7 +112,7 @@ describe("Number", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Number({ type: "x", convert: false })
+      @Number({convert: false })
       prop: number;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "number", convert: false } });
@@ -131,7 +133,7 @@ describe("UUID", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @UUID({ type: "x", optional: true })
+      @UUID({ optional: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "uuid", optional: true } });
@@ -152,7 +154,7 @@ describe("ObjectId", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @ObjectId({ type: "x", optional: true })
+      @ObjectId({ optional: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "string", pattern: expect.any(RegExp), optional: true } });
@@ -173,7 +175,7 @@ describe("Email", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Email({ type: "x", optional: true })
+      @Email({ optional: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "email", optional: true } });
@@ -194,7 +196,7 @@ describe("Date", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Date({ type: "x", convert: true })
+      @Date({ convert: true })
       prop: Date;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "date", convert: true } });
@@ -215,7 +217,7 @@ describe("Enum", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Enum({ type: "x", optional: true })
+      @Enum({ optional: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "enum", optional: true } });
@@ -236,7 +238,7 @@ describe("Array", () => {
   it("Should apply passed options", () => {
     @Schema()
     class Test {
-      @Array({ type: "x", optional: true })
+      @Array({ optional: true })
       prop: string;
     }
     expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "array", optional: true } });
@@ -272,6 +274,49 @@ describe("Nested", () => {
         }
       }
     });
+  });
+
+  it("Should apply nested array schema", () => {
+    @Schema(true)
+    class AnotherNested {
+      @Number({positive: true, integer: true})
+      prop: number;
+    }
+
+    @Schema(true)
+    class NestedTest {
+      @Nested()
+      anotherNested: AnotherNested;
+    }
+
+    @Schema()
+    class Test {
+      @Nested(NestedTest)
+      prop: NestedTest[];
+    }
+
+    expect(getSchema(Test)).toEqual(
+      {
+        prop: {
+          type: "array",
+          strict: true,
+          items: {
+            props: {
+              anotherNested: {
+                props: {
+                  prop: {
+                    convert: true,
+                    positive: true,
+                    integer: true,
+                    type: "number"
+                  }
+                }, strict: true, type: "object"
+              }
+            }, strict: true, type: "object"
+          }
+        }, $$strict: false
+      }
+    );
   });
 
   it("Should not remove nested $$strict", () => {
@@ -348,5 +393,81 @@ describe("validateOrReject", () => {
     } catch (e) {
       expect(e[0].field).toEqual("prop");
     }
+  });
+});
+
+describe("transform", () =>{
+  @Schema(true)
+  class AnotherNested {
+    @Number({positive: true, integer: true})
+    prop: number;
+
+    get total (): number{return 1;}
+
+  }
+    
+  @Schema(true)
+  class NestedTest {
+    @Nested()
+    anotherNested: AnotherNested;
+    get total (): number{return 1;}
+  }
+    
+  @Schema()
+  class Test {
+    @Nested(NestedTest)
+    prop: NestedTest[];
+    get total (): number{return 1;}
+  }
+  it("Should instantiate object", () => {
+    const obj: Test = Object.assign(new Test(), {prop: [{anotherNested: {prop: 1}}]} as Test);
+    transform(obj);
+    expect(obj.total).toEqual(1);
+    expect(obj.prop[0].total).toEqual(1);
+    expect(obj.prop[0].anotherNested.total).toEqual(1);
+  });
+});
+
+describe("transform and validate", () => {
+
+  it("Should return true when valid", () => {
+    @Schema(true)
+    class AnotherNested {
+      @Number({positive: true, integer: true})
+      prop: number;
+
+      get total (): number{return 1;}
+
+    }
+
+    @Schema(true)
+    class NestedTest {
+      @Nested()
+      anotherNested: AnotherNested;
+      get total (): number{return 1;}
+    }
+
+    @Schema()
+    class Test {
+      @Nested(NestedTest)
+      prop: NestedTest[];
+      get total (): number{return 1;}
+    }
+    const t: Test = Object.assign(new Test(), {prop: [{anotherNested: {prop: 1}}]} as Test);
+    expect(transformAndValidate(t)).toEqual(true);
+    expect(t.total).toEqual(1);
+    expect(t.prop[0].total).toEqual(1);
+    expect(t.prop[0].anotherNested.total).toEqual(1);
+  });
+
+  it("Should return validation errors", () => {
+    @Schema()
+    class Test {
+      @Email()
+      prop: string;
+    }
+    const t = new Test();
+    t.prop = "invalid";
+    expect(transformAndValidate(t)[0].field).toEqual("prop");
   });
 });

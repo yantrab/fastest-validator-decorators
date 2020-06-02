@@ -1,0 +1,3 @@
+{
+    "ignorePatterns": ["**/*.spec.ts"]
+}
