@@ -73,26 +73,28 @@ export const Date = decoratorFactory<DateOptions>({ type: "date" });
 export const Enum = decoratorFactory<Options>({ type: "enum" });
 export const Array = decoratorFactory<ArrayOptions>({ type: "array" });
 
-export function Nested (type?): any {
+export function Nested (options?: Options): any {
   return (target: any, key: string): any => {
     const t = Reflect.getMetadata("design:type", target, key);
-    if (t.name === "Array"){
-      if (!type){
-        throw new Error("You have to specify the type of the array");
-      }
+    Reflect.defineMetadata(TYPE_KEY, t, target, key);
+    const props = Object.assign({}, getSchema(t));
+    const strict = props.$$strict || false;
+    delete props.$$strict;
+    updateSchema(target, key, { ...options, props, strict, type: "object" });
+  };
+}
+export function NestedArray (type, options?: Options): any {
+  return (target: any, key: string): any => {
+    const t = Reflect.getMetadata("design:type", target, key);
+    if (t.name === "Array") {
       const props = Object.assign({}, getSchema(type));
       const strict = props.$$strict || false;
       delete props.$$strict;
       Reflect.defineMetadata(TYPE_KEY, type, target, key);
 
-      updateSchema(target, key, {type: "array", strict, items: { props, strict, type: "object" }});
+      updateSchema(target, key, {type: "array", strict, items: {...options, props, strict, type: "object"}});
       return;
     }
-    Reflect.defineMetadata(TYPE_KEY, t, target, key);
-    const props = Object.assign({}, getSchema(t));
-    const strict = props.$$strict || false;
-    delete props.$$strict;
-    updateSchema(target, key, { props, strict, type: "object" });
   };
 }
 

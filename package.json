@@ -15,7 +15,7 @@
     "lint": "eslint --ignore-path .gitignore **/*.ts",
     "test": "jest",
     "pretest": "npm run lint",
-    "prepublish": "npm run test && npm run build"
+    "prepublish": "npm run test && npm run build && npm version patch "
   },
   "files": [
     "dist"

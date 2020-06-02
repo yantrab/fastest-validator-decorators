@@ -1,6 +1,5 @@
 export interface Options {
   optional?: boolean;
-  type?;
 }
 
 export interface ArrayOptions extends Options{

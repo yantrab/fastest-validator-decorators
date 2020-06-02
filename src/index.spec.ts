@@ -15,7 +15,8 @@ import {
   Array,
   Nested,
   transform,
-  transformAndValidate
+  transformAndValidate,
+  NestedArray
 } from "../src/index";
 
 describe("Schema", () => {
@@ -292,7 +293,7 @@ describe("Nested", () => {
 
     @Schema()
     class Test {
-      @Nested(NestedTest)
+      @NestedArray(NestedTest)
       prop: NestedTest[];
     }
 
@@ -416,8 +417,7 @@ describe("transform", () =>{
 
   @Schema()
   class Test {
-    @Nested(NestedTest)
-    prop: NestedTest[];
+    @NestedArray(NestedTest) prop: NestedTest[];
     get total (): number{return 1;}
   }
   it("Should instantiate object", () => {
@@ -450,7 +450,7 @@ describe("transform and validate", () => {
 
     @Schema()
     class Test {
-      @Nested(NestedTest)
+      @NestedArray(NestedTest)
       prop: NestedTest[];
       get total (): number{return 1;}
     }
