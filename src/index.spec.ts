@@ -40,6 +40,7 @@ describe("Field", () => {
   it("Should not apply any defaults", () => {
     @Schema()
     class Test {
+
       @Field()
       prop: string;
     }
