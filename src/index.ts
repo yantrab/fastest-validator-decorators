@@ -73,7 +73,7 @@ export const Date = decoratorFactory<DateOptions>({ type: "date" });
 export const Enum = decoratorFactory<Options>({ type: "enum" });
 export const Array = decoratorFactory<ArrayOptions>({ type: "array" });
 
-export function Nested (): any {
+export function Nested (options?: Options): any {
   return (target: any, key: string): any => {
     const t = Reflect.getMetadata("design:type", target, key);
     Reflect.defineMetadata(TYPE_KEY, t, target, key);
