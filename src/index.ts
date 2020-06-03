@@ -29,13 +29,13 @@ export const validateOrReject = async (obj: any): Promise<true | ValidationError
 };
 
 export function getSchema (target: any): any {
-  return Reflect.getMetadata(SCHEMA_KEY, target.prototype);
+  return {...Reflect.getMetadata(SCHEMA_KEY, target.prototype)};
 }
 
 const updateSchema = (target: any, key: string | symbol, options: any): void => {
   const s = Reflect.getMetadata(SCHEMA_KEY, target) || {};
   s[key] = options;
-  Reflect.defineMetadata(SCHEMA_KEY, s, target);
+  Reflect.defineMetadata(SCHEMA_KEY, {...s}, target);
 };
 
 export function Schema (strict = false, messages = {}): any {
@@ -97,16 +97,19 @@ export function transform (obj): void {
   const schema = getSchema(obj.constructor);
   const props = Object.keys(schema);
   props.forEach(prop =>{
+    if (!obj[prop]){
+      return;
+    }
     if (schema[prop].type === "object"){
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
-      obj[prop] = Object.assign(new type(obj), obj[prop]);
+      obj[prop] = Object.assign(new type(obj[prop]), obj[prop]);
       delete obj[prop]._validate;
       transform(obj[prop]);
     }
 
     if (schema[prop].type === "array"){
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
-      obj[prop] = obj[prop].map(item => Object.assign(new type(obj), item));
+      obj[prop] = obj[prop].map(item => Object.assign(new type(item), item));
       obj[prop].forEach(item => {
         delete item._validate;
         transform(item);

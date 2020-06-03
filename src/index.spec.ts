@@ -339,6 +339,33 @@ describe("Nested", () => {
   });
 });
 
+
+describe("Inheritance", () => {
+    it("Should apply schema", () => {
+      @Schema(true)
+      class BaseClass {
+        @Boolean()
+        propFromBaseClass: boolean;
+      }
+      @Schema()
+      class Child1  extends  BaseClass{
+        @Number()
+        propFromChild1: number;
+      }
+
+      @Schema()
+      class Child2  extends  BaseClass{
+        @Number()
+        propFromChild2: number;
+      }
+    expect(getSchema(Child1)).toEqual({
+      propFromBaseClass: {type: "boolean"},
+      $$strict: false,
+      propFromChild1: {convert: true, type: "number"}
+    });
+  });
+});
+
 describe("validate", () => {
 
   it("Should throw an error if missing compiled validation method", () => {
