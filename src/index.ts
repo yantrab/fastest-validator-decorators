@@ -9,7 +9,7 @@ import {
   StringOptions,
   UuidOptions
 } from "./interfaces";
-
+import {cloneDeep} from "lodash";
 const SCHEMA_KEY = Symbol("propertyMetadata");
 const TYPE_KEY = Symbol("typeMetadata");
 export const validate = (obj: any): true | ValidationError[] => {
@@ -29,13 +29,13 @@ export const validateOrReject = async (obj: any): Promise<true | ValidationError
 };
 
 export function getSchema (target: any): any {
-  return {...Reflect.getMetadata(SCHEMA_KEY, target.prototype)};
+  return cloneDeep(Reflect.getMetadata(SCHEMA_KEY, target.prototype));
 }
 
 const updateSchema = (target: any, key: string | symbol, options: any): void => {
-  const s = Reflect.getMetadata(SCHEMA_KEY, target) || {};
+  const s = cloneDeep(Reflect.getMetadata(SCHEMA_KEY, target) || {});
   s[key] = options;
-  Reflect.defineMetadata(SCHEMA_KEY, {...s}, target);
+  Reflect.defineMetadata(SCHEMA_KEY, s, target);
 };
 
 export function Schema (strict = false, messages = {}): any {

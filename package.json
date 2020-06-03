@@ -33,6 +33,7 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "@types/jest": "^24.0.25",
+    "@types/lodash": "^4.14.154",
     "@typescript-eslint/eslint-plugin": "^2.15.0",
     "@typescript-eslint/parser": "^2.15.0",
     "eslint": "^6.8.0",
@@ -41,8 +42,9 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "fastest-validator": "^1.0.0"
+    "fastest-validator": "^1.0.0",
+    "lodash": "^4.17.15",
+    "reflect-metadata": "^0.1.13"
   },
   "jest": {
     "coverageDirectory": "<rootDir>/coverage",

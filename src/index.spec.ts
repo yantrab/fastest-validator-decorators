@@ -357,12 +357,17 @@ describe("Inheritance", () => {
       class Child2  extends  BaseClass{
         @Number()
         propFromChild2: number;
+
+        @NestedArray(Child1) arrayOfChild1: Child1;
       }
-    expect(getSchema(Child1)).toEqual({
-      propFromBaseClass: {type: "boolean"},
-      $$strict: false,
-      propFromChild1: {convert: true, type: "number"}
-    });
+      expect(getSchema(Child2)).toEqual({
+        propFromBaseClass: {type: "boolean"},
+        $$strict: false,
+        propFromChild2: {convert: true, type: "number"},
+        arrayOfChild1: {type: "array", strict:false,
+          items:{props: { propFromBaseClass:{type: "boolean"}, propFromChild1:{convert:true, type:"number"}},
+            strict: false, type: "object"}}
+      });
   });
 });
 
