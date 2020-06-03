@@ -89,7 +89,7 @@ export function NestedArray (type, options?: Options): any {
     const strict = props.$$strict || false;
     delete props.$$strict;
     Reflect.defineMetadata(TYPE_KEY, type, target, key);
-    updateSchema(target, key, {type: "array", strict, items: {...options, props, strict, type: "object"}});
+    updateSchema(target, key, {...options, type: "array", strict, items: { props, strict, type: "object"}});
   };
 }
 

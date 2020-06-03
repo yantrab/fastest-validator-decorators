@@ -388,6 +388,19 @@ describe("validate", () => {
     expect(validate(t)).toEqual(true);
   });
 
+  it("Should return true when valid with optional nested array", () => {
+    @Schema()
+    class SomeNestedClass {
+    }
+
+    @Schema()
+    class SomeClass{
+      @NestedArray(SomeNestedClass, { optional: true }) arrayOfNestedClass?: SomeNestedClass[];
+    }
+    const t = new SomeClass();
+    expect(validate(t)).toEqual(true);
+  });
+
   it("Should return validation errors", () => {
     @Schema()
     class Test {
