@@ -374,7 +374,10 @@ describe("Inheritance", () => {
 describe("validate", () => {
 
   it("Should throw an error if missing compiled validation method", () => {
-    expect(() => validate({})).toThrow();
+    class Test {
+    }
+
+    expect(() => validate(new Test())).toThrow();
   });
 
   it("Should return true when valid", () => {

@@ -12,12 +12,15 @@ import {
 import {cloneDeep} from "lodash";
 const SCHEMA_KEY = Symbol("propertyMetadata");
 const TYPE_KEY = Symbol("typeMetadata");
+const COMPILE_KEY = Symbol("compileKey");
+
 export const validate = (obj: any): true | ValidationError[] => {
-  if (!obj._validate) {
+  const validate = Reflect.getMetadata(COMPILE_KEY, obj.constructor);
+
+  if (!validate) {
     throw new Error("Obj is missing complied validation method");
   }
-  const { _validate, _schema, ...data } = obj;
-  return _validate(data);
+  return validate(obj);
 };
 
 export const validateOrReject = async (obj: any): Promise<true | ValidationError[]> => {
@@ -42,12 +45,11 @@ export function Schema (strict = false, messages = {}): any {
   return function _Schema<T extends {new (...args: any[]): {}}>(target: T): any  {
     updateSchema(target.prototype, "$$strict", strict);
     return class extends target {
-      _validate: (obj: object) => true | ValidationError[];
       constructor (...args: any[]) {
         super(...args);
         const s = Reflect.getMetadata(SCHEMA_KEY, this) || {};
         const v = new FastestValidator({ messages });
-        this._validate = v.compile(s);
+        Reflect.defineMetadata(COMPILE_KEY, v.compile(s), target);
         return this;
       }
     };
@@ -103,7 +105,6 @@ export function transform (obj): void {
     if (schema[prop].type === "object"){
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
       obj[prop] = Object.assign(new type(obj[prop]), obj[prop]);
-      delete obj[prop]._validate;
       transform(obj[prop]);
     }
 
@@ -111,7 +112,6 @@ export function transform (obj): void {
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
       obj[prop] = obj[prop].map(item => Object.assign(new type(item), item));
       obj[prop].forEach(item => {
-        delete item._validate;
         transform(item);
       });
     }
