@@ -85,7 +85,7 @@ export function Nested (options?: Options): any {
     updateSchema(target, key, { ...options, props, strict, type: "object" });
   };
 }
-export function NestedArray (type, options?: Options): any {
+export function NestedArray (type, options?: ArrayOptions): any {
   return (target: any, key: string): any => {
     const props = Object.assign({}, getSchema(type));
     const strict = props.$$strict || false;
@@ -110,9 +110,10 @@ export function transform (obj): void {
 
     if (schema[prop].type === "array"){
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
-      obj[prop] = obj[prop].map(item => Object.assign(new type(item), item));
+      obj[prop] = obj[prop].map(item => item ? Object.assign(new type(item), item) : item);
       obj[prop].forEach(item => {
-        transform(item);
+        if (item)
+          transform(item);
       });
     }
   });
