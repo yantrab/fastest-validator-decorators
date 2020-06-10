@@ -1,7 +1,7 @@
 {
   "name": "fastest-validator-typesciprt",
   "author": "yaniv trabelsi",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Fastest validator decorators",
   "license": "MIT",
   "repository": {
