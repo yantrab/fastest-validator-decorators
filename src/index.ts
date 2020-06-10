@@ -110,6 +110,8 @@ export function transform (obj): void {
 
     if (schema[prop].type === "array"){
       const type = Reflect.getMetadata(TYPE_KEY, obj, prop);
+      if ((!type || !type.constructor)) return;
+
       obj[prop] = obj[prop].map(item => item ? Object.assign(new type(item), item) : item);
       obj[prop].forEach(item => {
         if (item)
