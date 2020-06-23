@@ -44,7 +44,8 @@
   "dependencies": {
     "fastest-validator": "^1.0.0",
     "lodash": "^4.17.15",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "eslint-plugin-fastest-validator": "^1.0.0"
   },
   "jest": {
     "coverageDirectory": "<rootDir>/coverage",

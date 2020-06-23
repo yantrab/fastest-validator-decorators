@@ -1,6 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "fastest-validator"],
   "extends": ["plugin:@typescript-eslint/recommended"],
   "rules": {
     "quotes": [2, "double"],
@@ -19,6 +19,7 @@
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": ["error", { "allowTypedFunctionExpressions": true }],
     "@typescript-eslint/ban-ts-ignore": "off",
-    "@typescript-eslint/no-empty-interface": "off"
+    "@typescript-eslint/no-empty-interface": "off",
+    "fastest-validator/fastest-validator": "error"
   }
 }
