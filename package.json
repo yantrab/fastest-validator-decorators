@@ -1,7 +1,7 @@
 {
-  "name": "fastest-validator-typesciprt",
+  "name": "fastest-validator-typescript",
   "author": "yaniv trabelsi",
-  "version": "0.0.16",
+  "version": "1.0.0",
   "description": "Fastest validator decorators",
   "license": "MIT",
   "repository": {
