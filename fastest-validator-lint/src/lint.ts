@@ -1,5 +1,5 @@
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { AST_NODE_TYPES } from "@typescript-eslint/typescript-estree";
+import {AST_NODE_TYPES, TSESTree} from "@typescript-eslint/typescript-estree";
 
 
 export const createRule = ESLintUtils.RuleCreator(
@@ -46,10 +46,9 @@ export const rule =  createRule({
     ],
   },
   defaultOptions: [],
-  create (context)  {
-
+  create (context): any  {
     const handleType = (node: any, decoratorName: string, type?: string) =>{
-      const prop = node?.parent;
+      const prop = node;
       const hasBooleanDecorator = prop?.decorators && prop?.decorators.some((d: any) => d.expression.callee.name === decoratorName);
       if (hasBooleanDecorator){
         return;
@@ -76,19 +75,22 @@ export const rule =  createRule({
           node: node,
           messageId: "errorMissingTypeValidation",
           fix (fixer) {
-            return [fixer.insertTextBefore(node,"@Schema()\n")];
+            return [fixer.insertTextBefore(node.parent?.type === "ExportNamedDeclaration" ? node.parent as TSESTree.Node: node,
+              "@Schema()\n")];
           },
         });
       },
-      TSTypeAnnotation (node){
-        if (node.typeAnnotation.type === "TSTypeReference")
+      ClassProperty (node): void{
+        const type = node.typeAnnotation?.typeAnnotation?.type;
+        if (!type) return;
+        if (type === "TSTypeReference")
           handleType(node, "Nested");
-        else if (node.typeAnnotation.type === "TSArrayType"){
-          const t = (node as any).typeAnnotation.elementType?.typeName?.name;
+        else if (type === "TSArrayType"){
+          const t = node.typeAnnotation?.typeAnnotation?.elementType?.typeName?.name;
           handleType( node, t ? "NestedArray" : "Array", t);
         }
-        else if (isPrimitiveType(node.typeAnnotation.type))
-          handleType(node, node.typeAnnotation.type.replace("TS","").replace("Keyword", ""));
+        else if (isPrimitiveType(type))
+          handleType(node, type.replace("TS","").replace("Keyword", ""));
       }
     };
   },
