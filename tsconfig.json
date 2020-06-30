@@ -6,10 +6,10 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noImplicitAny": false,
-    "module": "ES6",
     "moduleResolution": "node",
     "alwaysStrict": true,
     "declaration": true,
+    "module": "commonjs",
     "types": [
       "jest"
     ],
