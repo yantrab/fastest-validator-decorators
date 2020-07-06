@@ -93,7 +93,7 @@ All decorators accept an object of options that apply to the type being used, fo
 
 
 ## ESLint
-To force using validation decorators add rule to eslint file.
+To force using validation decorators add rule to eslint file (within domain folder).
 ```
 {
   "parser": "@typescript-eslint/parser",
