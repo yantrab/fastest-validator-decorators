@@ -481,7 +481,7 @@ describe("transform and validate", () => {
 
   it("Should return true when valid", () => {
     @Schema(true)
-    class AnotherNested {
+    class AnotherNestedObject {
       @Number({positive: true, integer: true})
       prop: number;
 
@@ -490,19 +490,19 @@ describe("transform and validate", () => {
     }
 
     @Schema(true)
-    class NestedTest {
+    class NestedObject {
       @Nested()
-      anotherNested: AnotherNested;
+      anotherNested: AnotherNestedObject;
       get total (): number{return 1;}
     }
 
     @Schema()
-    class Test {
-      @NestedArray(NestedTest)
-      prop: NestedTest[];
+    class SomeModel {
+      @NestedArray(NestedObject)
+      prop: NestedObject[];
       get total (): number{return 1;}
     }
-    const t: Test = Object.assign(new Test(), {prop: [{anotherNested: {prop: 1}}]} as Test);
+    const t: SomeModel = Object.assign(new SomeModel(), {prop: [{anotherNested: {prop: 1}}]});
     expect(transformAndValidate(t)).toEqual(true);
     expect(t.total).toEqual(1);
     expect(t.prop[0].total).toEqual(1);

@@ -1,79 +1,46 @@
-[![npm](https://img.shields.io/npm/v/fastest-validator-decorators.svg)](https://www.npmjs.com/package/fastest-validator-decorators) 
-[![npm](https://img.shields.io/npm/dm/fastest-validator-decorators.svg)](https://www.npmjs.com/package/fastest-validator-decorators) 
-[![GitHub issues](https://img.shields.io/github/issues/tobydeh/fastest-validator-decorators.svg)](https://github.com/tobydeh/fastest-validator-decorators/issues) 
-[![GitHub license](https://img.shields.io/github/license/tobydeh/fastest-validator-decorators.svg)](https://github.com/tobydeh/fastest-validator-decorators/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/v/fastest-validator-decorators.svg)](https://www.npmjs.com/package/fastest-validator-typescript) 
+[![npm](https://img.shields.io/npm/dm/fastest-validator-decorators.svg)](https://www.npmjs.com/package/fastest-validator-typescript) 
+[![GitHub issues](https://img.shields.io/github/issues/yantrab/fastest-validator-decorators.svg)](https://github.com/yantrab/fastest-validator-typescript/issues) 
 
-# Fastest Validator Decorators
+# Fastest Validator Typescript
 > Decorators for [fastest-validator](https://github.com/icebob/fastest-validator#readme)
-
-## Example usage
-
-```js
-import {
-  Schema,
-  Array,
-  Nested,
-  UUID,
-  Enum,
-  Email,
-  Number,
-  getSchema,
-  validate,
-  validateOrReject
-} from "fastest-validator-decorators";
-
-@Schema(true)
-class Entity1 {
-  @Array({ items: "string"})
-  prop1: string[];
-}
-
-@Schema()
-class Entity2 {
-  @UUID()
-  prop1: string;
-
-  @Enum({ values : ["one", "two"] })
-  prop2: "one" | "two";
-
-  @Email()
-  prop3: string;
-
-  @Number({ positive: true })
-  prop4: number;
-
-  @Nested()
-  prop5: Entity1;
-}
-
-const schema = getSchema(Entity2); // get the fastest-validator schema
-{
-  $$strict: false,
-  prop1: { type: "uuid" },
-  prop2: { type: "enum", values: ["one", "two"] },
-  prop3: { type: "email" },
-  prop4: { type: "number", positive: true, convert: true },
-  prop5: { type: "object", strict: true, props: {
-    prop1: { type: "array", items: "string" }
-  }}
-}
-
-const entity = new Entity2();
-entity.prop1 = "thiswillfail";
-entity.prop2 = "one";
-entity.prop3 = "some@email.com"
-entity.prop4 = -10;
-entity.prop5 = new Entity1();
-
-const result = validate(entity); // returns true or fastest-validator errors
-const result = await validateOrReject(entity); // returns true or throws fastest-validator errors
-```
 
 ## Setup
 
 Install the package
 ```
-npm install --save fastest-validator-decorators
+npm install --save fastest-validator-typescript
+```
+## Example usage
+
+```ts
+    @Schema(true)
+    class AnotherNestedObject {
+      @Number({positive: true, integer: true})
+      prop: number;
+
+      get total (): number{return 1;}
+
+    }
+
+    @Schema(true)
+    class NestedObject {
+      @Nested()
+      anotherNested: AnotherNestedObject;
+      get total (): number{return 1;}
+    }
+
+    @Schema()
+    class SomeModel {
+      @NestedArray(NestedObject)
+      prop: NestedObject[];
+      get total (): number{return 1;}
+    }
+    const t: SomeModel = Object.assign(new SomeModel(), {prop: [{anotherNested: {prop: 1}}]});
+    expect(transformAndValidate(t)).toEqual(true);
+    expect(t.total).toEqual(1);
+    expect(t.prop[0].total).toEqual(1);
+    expect(t.prop[0].anotherNested.total).toEqual(1);
 ```
 
 Add the following to your tsconfig.json
@@ -110,13 +77,21 @@ All decorators accept an object of options that apply to the type being used, fo
 
 **@Nested({})** - Applies { type: "object", props: {} } (The props are gathered from the nested schema)
 
+**@NestedArray(type, {})** - Applies { type: "object", props: {} } (The props are gathered from the nested schema)
+
 ## Available methods
 
 **getSchema()** - Returns the fastest-validator schema for a given class
 
 **validate()** - Returns true or fastest-validator errors for a given instance
 
+**transformAndValidate()** - validate and  tranform object.
+
+**transform()** - nested transform object to the ES6 classes
+
 **validateOrReject()** - Returns true or throws fastest-validator errors for a given instance
+
+
 
 ## License
 Licensed under the MIT license.
