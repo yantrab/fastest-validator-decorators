@@ -92,6 +92,18 @@ All decorators accept an object of options that apply to the type being used, fo
 **validateOrReject()** - Returns true or throws fastest-validator errors for a given instance
 
 
+## ESLint
+To force using validation decorators add rule to eslint file.
+```
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "fastest-validator"],
+  "extends": ["../.eslintrc.json"],
+  "rules": {
+    "fastest-validator/fastest-validator": "error"
+  }
+}
+```
 
 ## License
 Licensed under the MIT license.
