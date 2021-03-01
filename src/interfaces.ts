@@ -9,6 +9,7 @@ export interface ArrayOptions extends Options{
   length?: number;
   contains?: Array<any>;
   unique?: boolean;
+  items?: string;
 }
 export interface BooleanOptions extends  Options{
   convert?: boolean;

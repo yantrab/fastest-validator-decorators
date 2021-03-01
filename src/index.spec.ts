@@ -231,10 +231,11 @@ describe("Array", () => {
   it("Should apply defaults", () => {
     @Schema()
     class Test {
-      @Array()
+      @Array({items: 'string'})
       prop: string;
     }
-    expect(getSchema(Test)).toEqual({ $$strict: false, prop: { type: "array" } });
+    const schema = getSchema(Test)
+    expect(schema).toEqual({ $$strict: false, prop: { type: "array" } });
   });
 
   it("Should apply passed options", () => {
@@ -302,7 +303,7 @@ describe("Nested", () => {
         prop: {
           type: "array",
           strict: true,
-          items: { 
+          items: {
             props: {
               anotherNested: {
                 props: {
