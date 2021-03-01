@@ -235,7 +235,7 @@ describe("Array", () => {
       prop: string;
     }
     const schema = getSchema(Test)
-    expect(schema).toEqual({ $$strict: false, prop: { type: "array" } });
+    expect(schema).toEqual({ $$strict: false, prop: { type: "array" ,  items: "string",} });
   });
 
   it("Should apply passed options", () => {
